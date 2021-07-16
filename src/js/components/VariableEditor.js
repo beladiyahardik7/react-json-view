@@ -263,11 +263,17 @@ class VariableEditor extends React.PureComponent {
               {options && Array.isArray(options) ? (
                   <Select
                     options={options}
-                    placeholder='update the value'
+                    placeholder='Select the state'
                     value={editValue}
-                    onChange={event => {
+                    onChange={data => {
+                      const value = data.value;
+                      const detected = parseInput(value);
                       this.setState({
-                        editValue: event,
+                        editValue: value,
+                        parsedInput: {
+                          type: detected.type,
+                          value: detected.value
+                        }
                       });
                     }}
                     onKeyDown={e => {
