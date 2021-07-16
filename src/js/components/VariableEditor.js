@@ -6,6 +6,7 @@ import dispatcher from './../helpers/dispatcher';
 import parseInput from './../helpers/parseInput';
 import stringifyVariable from './../helpers/stringifyVariable';
 import CopyToClipboard from './CopyToClipboard';
+import Select from 'react-select';
 
 //data type components
 import {
@@ -254,48 +255,80 @@ class VariableEditor extends React.PureComponent {
 
     getEditInput = () => {
         const { theme } = this.props;
+        const { options } = this.props;
         const { editValue } = this.state;
 
         return (
             <div>
-                <AutosizeTextarea
-                    type="text"
-                    inputRef={input => input && input.focus()}
+              {options && Array.isArray(options) ? (
+                  <Select
+                    options={options}
+                    placeholder='update the value'
                     value={editValue}
-                    class="variable-editor"
                     onChange={event => {
-                        const value = event.target.value;
-                        const detected = parseInput(value);
-                        this.setState({
-                            editValue: value,
-                            parsedInput: {
-                                type: detected.type,
-                                value: detected.value
-                            }
-                        });
+                      this.setState({
+                        editValue: event,
+                      });
                     }}
                     onKeyDown={e => {
-                        switch (e.key) {
-                            case 'Escape': {
-                                this.setState({
-                                    editMode: false,
-                                    editValue: ''
-                                });
-                                break;
-                            }
-                            case 'Enter': {
-                                if (e.ctrlKey || e.metaKey) {
-                                    this.submitEdit(true);
-                                }
-                                break;
-                            }
+                      switch (e.key) {
+                        case 'Escape': {
+                          this.setState({
+                            editMode: false,
+                            editValue: ''
+                          });
+                          break;
                         }
-                        e.stopPropagation();
+                        case 'Enter': {
+                          if (e.ctrlKey || e.metaKey) {
+                            this.submitEdit(true);
+                          }
+                          break;
+                        }
+                      }
+                      e.stopPropagation();
                     }}
-                    placeholder="update this value"
-                    minRows={2}
-                    {...Theme(theme, 'edit-input')}
+                  />
+                ) : (
+                <AutosizeTextarea
+                  type="text"
+                  inputRef={input => input && input.focus()}
+                  value={editValue}
+                  class="variable-editor"
+                  onChange={event => {
+                    const value = event.target.value;
+                    const detected = parseInput(value);
+                    this.setState({
+                      editValue: value,
+                      parsedInput: {
+                        type: detected.type,
+                        value: detected.value
+                      }
+                    });
+                  }}
+                  onKeyDown={e => {
+                    switch (e.key) {
+                      case 'Escape': {
+                        this.setState({
+                          editMode: false,
+                          editValue: ''
+                        });
+                        break;
+                      }
+                      case 'Enter': {
+                        if (e.ctrlKey || e.metaKey) {
+                          this.submitEdit(true);
+                        }
+                        break;
+                      }
+                    }
+                    e.stopPropagation();
+                  }}
+                  placeholder="update this value"
+                  minRows={2}
+                  {...Theme(theme, 'edit-input')}
                 />
+              )}
                 <div {...Theme(theme, 'edit-icon-container')}>
                     <Remove
                         class="edit-cancel"
